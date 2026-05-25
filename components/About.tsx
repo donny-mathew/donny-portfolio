@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { profile, skillChips } from "@/lib/resume-data";
+import GeometricAvatar from "@/components/GeometricAvatar";
 
 export default function About() {
   const ref = useRef<HTMLDivElement>(null);
@@ -31,7 +32,6 @@ export default function About() {
         </motion.h2>
 
         <div className="flex flex-col lg:flex-row gap-12 items-start">
-          {/* Photo placeholder */}
           <motion.div
             className="flex-shrink-0"
             initial={{ opacity: 0, x: -20 }}
@@ -39,16 +39,7 @@ export default function About() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <div
-              className="w-36 h-36 rounded-2xl flex items-center justify-center text-4xl font-bold"
-              style={{
-                background: "rgba(0,212,255,0.1)",
-                border: "1px solid rgba(0,212,255,0.25)",
-                color: "var(--accent-cyan)",
-              }}
-            >
-              DM
-            </div>
+            <GeometricAvatar size={160} />
           </motion.div>
 
           {/* Bio */}
