@@ -8,9 +8,10 @@ import { diagrams, type DiagramTab } from "@/lib/diagram-configs";
 const ArchDiagram = dynamic(() => import("@/components/ArchDiagram"), { ssr: false });
 
 const TABS: { key: DiagramTab; label: string }[] = [
-  { key: "order",  label: "Order Flow" },
-  { key: "search", label: "Search Flow" },
-  { key: "ai",     label: "AI / Prompt Layer" },
+  { key: "order",   label: "Order Flow" },
+  { key: "search",  label: "Search Flow" },
+  { key: "ai",      label: "AI / Prompt Layer" },
+  { key: "devflow", label: "Dev Workflow" },
 ];
 
 const ACHIEVEMENTS = [

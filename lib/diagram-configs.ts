@@ -1,6 +1,6 @@
 import type { Node, Edge } from "reactflow";
 
-export type DiagramTab = "order" | "search" | "ai";
+export type DiagramTab = "order" | "search" | "ai" | "devflow";
 
 const nodeStyle = {
   background: "rgba(0, 212, 255, 0.08)",
@@ -109,8 +109,70 @@ export const aiEdges: Edge[] = [
   { id: "a5", source: "claude-ai",       target: "ai-response",      animated: true,  style: { stroke: "#39FF14", strokeWidth: 1.5 } },
 ];
 
+// ─── DEV WORKFLOW ─────────────────────────────────────────────────────────────
+
+const copilotStyle = {
+  ...nodeStyle,
+  background: "rgba(57, 255, 20, 0.07)",
+  border: "1px solid rgba(57, 255, 20, 0.4)",
+};
+
+const claudeStyle = {
+  ...nodeStyle,
+  background: "rgba(0, 212, 255, 0.12)",
+  border: "1px solid rgba(0, 212, 255, 0.7)",
+};
+
+export const devflowNodes: Node[] = [
+  // Work pipeline — Copilot (green tint, top lane)
+  { id: "spec-doc",      position: { x: 30,  y: 60  }, data: { label: "Spec\nDocument" },           style: copilotStyle },
+  { id: "copilot",       position: { x: 230, y: 60  }, data: { label: "Copilot\n+ Skills" },        style: { ...copilotStyle, border: "1px solid rgba(57,255,20,0.8)", background: "rgba(57,255,20,0.12)" } },
+
+  // Personal pipeline — Claude Code (cyan, bottom lane)
+  { id: "claude-md",     position: { x: 30,  y: 260 }, data: { label: "CLAUDE.md" },                style: claudeStyle },
+  { id: "task-md",       position: { x: 230, y: 260 }, data: { label: "TASK.md\nQueue" },           style: claudeStyle },
+  { id: "remote-agent",  position: { x: 430, y: 260 }, data: { label: "Remote Agent\nLoop" },       style: { ...claudeStyle, border: "1px solid rgba(0,212,255,0.9)", background: "rgba(0,212,255,0.16)" } },
+
+  // Convergence
+  { id: "code-gen",      position: { x: 630, y: 160 }, data: { label: "Code\nGeneration" },         style: nodeStyle },
+  { id: "junit",         position: { x: 800, y: 60  }, data: { label: "JUnit /\nMockito" },         style: observabilityStyle },
+  { id: "code-review",   position: { x: 800, y: 260 }, data: { label: "Code\nReview" },             style: observabilityStyle },
+  { id: "ci-deploy",     position: { x: 980, y: 160 }, data: { label: "CI/CD\nDeploy" },            style: nodeStyle },
+];
+
+export const devflowEdges: Edge[] = [
+  // Copilot track
+  { id: "d1", source: "spec-doc",     target: "copilot",      label: "drives",  animated: true,  style: { stroke: "#39FF14", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
+  { id: "d2", source: "copilot",      target: "code-gen",     label: "generates", animated: true, style: { stroke: "#39FF14", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
+
+  // Claude Code track
+  { id: "d3", source: "claude-md",    target: "task-md",      label: "context", animated: false, style: { stroke: "#00D4FF", strokeWidth: 1.5, strokeDasharray: "4 4" }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
+  { id: "d4", source: "task-md",      target: "remote-agent", label: "queues",  animated: true,  style: { stroke: "#00D4FF", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
+  { id: "d5", source: "remote-agent", target: "code-gen",     label: "commits", animated: true,  style: { stroke: "#00D4FF", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
+
+  // Convergence
+  { id: "d6", source: "code-gen",     target: "junit",        label: "tested",  animated: false, style: { stroke: "#00D4FF", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
+  { id: "d7", source: "code-gen",     target: "code-review",  label: "reviewed", animated: false, style: { stroke: "#00D4FF", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
+  { id: "d8", source: "junit",        target: "ci-deploy",    animated: true,   style: { stroke: "#39FF14", strokeWidth: 1.5 } },
+  { id: "d9", source: "code-review",  target: "ci-deploy",    animated: true,   style: { stroke: "#39FF14", strokeWidth: 1.5 } },
+];
+
+// Tooltips for devflow nodes
+Object.assign(nodeTooltips, {
+  "spec-doc":     "Spec-driven development: every feature starts with a structured spec defining requirements, API contracts, and acceptance criteria before any code is written.",
+  "copilot":      "GitHub Copilot with custom skill definitions and prompt templates — used at work to generate consistent microservice boilerplate and enforce team patterns.",
+  "claude-md":    "CLAUDE.md gives Claude Code persistent project context: architecture conventions, naming rules, and constraints that carry across every agent session.",
+  "task-md":      "TASK.md is a structured task queue Claude Code reads autonomously — picks up the next task, executes it, marks it done, and moves on without manual prompting.",
+  "remote-agent": "Claude Code's remote agent loop — runs tasks asynchronously, writes and commits code, runs builds, and reports back. No active supervision required.",
+  "code-gen":     "AI-generated code is a starting point, not an end product — every output is reviewed, understood, and owned by the engineer before merging.",
+  "junit":        "JUnit/Mockito test suite maintained across all service layers. AI-generated code must pass existing tests and add coverage for new behaviour.",
+  "code-review":  "Standard peer code review process — AI assistance accelerates implementation but does not bypass engineering rigour or team standards.",
+  "ci-deploy":    "CI/CD pipeline triggers on merge — agentic workflow plugs into existing DevOps infrastructure without special accommodations.",
+});
+
 export const diagrams: Record<DiagramTab, { nodes: Node[]; edges: Edge[]; label: string }> = {
-  order:  { nodes: orderNodes,  edges: orderEdges,  label: "Order Flow" },
-  search: { nodes: searchNodes, edges: searchEdges, label: "Search Flow" },
-  ai:     { nodes: aiNodes,     edges: aiEdges,     label: "AI / Prompt Layer" },
+  order:   { nodes: orderNodes,   edges: orderEdges,   label: "Order Flow" },
+  search:  { nodes: searchNodes,  edges: searchEdges,  label: "Search Flow" },
+  ai:      { nodes: aiNodes,      edges: aiEdges,      label: "AI / Prompt Layer" },
+  devflow: { nodes: devflowNodes, edges: devflowEdges, label: "Dev Workflow" },
 };
