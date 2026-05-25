@@ -37,7 +37,7 @@ export const skills = [
 
 export const skillChips = [
   "Java", "Spring Boot", "MongoDB", "OpenSearch",
-  "RabbitMQ", "Docker", "AI / Prompt Engineering",
+  "RabbitMQ", "Docker", "Agentic Development",
 ];
 
 export const experience = [
