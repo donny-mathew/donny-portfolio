@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+:root {
+  --bg-primary: #0A0F1C;
+  --bg-card: rgba(255, 255, 255, 0.04);
+  --border-glass: rgba(0, 212, 255, 0.15);
+  --accent-cyan: #00D4FF;
+  --accent-green: #39FF14;
+  --accent-cyan-dim: rgba(0, 212, 255, 0.15);
+  --text-primary: #F0F4FF;
+  --text-muted: #8896B0;
+}
+
+@theme inline {
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --color-cyan: var(--accent-cyan);
+  --color-green: var(--accent-green);
+  --color-muted: var(--text-muted);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.glass-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.text-cyan {
+  color: var(--accent-cyan);
+}
+
+.text-green {
+  color: var(--accent-green);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+/* ReactFlow dark theme overrides */
+.react-flow__background {
+  background: transparent !important;
+}
+
+.react-flow__controls {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-glass) !important;
+}
+
+.react-flow__controls-button {
+  background: transparent !important;
+  border-bottom: 1px solid var(--border-glass) !important;
+  color: var(--accent-cyan) !important;
+  fill: var(--accent-cyan) !important;
+}
