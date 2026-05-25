@@ -199,7 +199,7 @@ export default function Hero() {
               e.currentTarget.style.background = "transparent";
             }}
           >
-            Ask Donny AI
+            GET /donny
           </button>
         </motion.div>
       </div>

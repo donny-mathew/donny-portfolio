@@ -83,8 +83,8 @@ export default function AskDonny() {
         }}
         aria-label="Toggle AI chat"
       >
-        <span>{open ? "✕" : "🤖"}</span>
-        <span>{open ? "Close" : "Ask Donny"}</span>
+        <span>{open ? "✕" : "⚡"}</span>
+        <span>{open ? "Close" : "GET /donny"}</span>
       </button>
 
       {/* Chat panel */}
@@ -111,7 +111,7 @@ export default function AskDonny() {
             >
               <span className="text-xl">🤖</span>
               <div>
-                <p className="font-semibold text-white text-sm">Ask Donny</p>
+                <p className="font-semibold text-white text-sm font-mono">GET /donny</p>
                 <p className="text-xs" style={{ color: "var(--text-muted)" }}>
                   AI assistant — answers from resume data
                 </p>
