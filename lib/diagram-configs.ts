@@ -1,6 +1,6 @@
 import type { Node, Edge } from "reactflow";
 
-export type DiagramTab = "order" | "search" | "ai" | "devflow";
+export type DiagramTab = "order" | "devflow";
 
 const nodeStyle = {
   background: "rgba(0, 212, 255, 0.08)",
@@ -22,6 +22,90 @@ const observabilityStyle = {
   fontSize: "11px",
 };
 
+// ─── ORDER FLOW node styles ───────────────────────────────────────────────────
+const monoBase = {
+  fontFamily: "var(--font-jetbrains), monospace",
+  textAlign: "center" as const,
+  borderRadius: "8px",
+  fontSize: "12px",
+};
+
+const grayBoxStyle = {
+  ...monoBase,
+  background: "rgba(50,55,70,0.7)",
+  border: "1px solid rgba(110,120,140,0.55)",
+  color: "#E0E8F0",
+  padding: "10px 20px",
+  minWidth: "160px",
+};
+
+const amberBoxStyle = {
+  ...monoBase,
+  background: "rgba(120,65,10,0.65)",
+  border: "1px solid rgba(210,130,20,0.75)",
+  color: "#FFD070",
+  padding: "10px 20px",
+  minWidth: "160px",
+};
+
+const omsBlockStyle = {
+  ...monoBase,
+  background: "rgba(40,30,120,0.75)",
+  border: "2px solid rgba(110,90,220,0.85)",
+  borderRadius: "10px",
+  color: "#F0F4FF",
+  fontSize: "14px",
+  padding: "18px 40px",
+  minWidth: "580px",
+  fontWeight: 600,
+};
+
+const redBoxStyle = {
+  ...monoBase,
+  background: "rgba(100,20,20,0.65)",
+  border: "1px solid rgba(190,50,50,0.75)",
+  color: "#FFB0B0",
+  padding: "10px 20px",
+  minWidth: "160px",
+};
+
+const blueBoxStyle = {
+  ...monoBase,
+  background: "rgba(20,55,130,0.65)",
+  border: "1px solid rgba(60,130,220,0.75)",
+  color: "#90C8FF",
+  padding: "10px 20px",
+  minWidth: "180px",
+};
+
+const noteStyle = {
+  ...monoBase,
+  background: "transparent",
+  border: "none",
+  color: "rgba(150,160,175,0.8)",
+  fontSize: "10px",
+  padding: "4px",
+  minWidth: "400px",
+};
+
+const mongoDbStyle = {
+  ...monoBase,
+  background: "rgba(10,80,40,0.65)",
+  border: "1px solid rgba(30,180,80,0.75)",
+  color: "#80FFB0",
+  padding: "10px 20px",
+  minWidth: "150px",
+};
+
+const openSearchStyle = {
+  ...monoBase,
+  background: "rgba(20,40,100,0.65)",
+  border: "1px solid rgba(80,100,200,0.75)",
+  color: "#A0B8FF",
+  padding: "10px 20px",
+  minWidth: "150px",
+};
+
 export const nodeTooltips: Record<string, string> = {
   "ad-request": "Incoming ad campaign order from upstream systems via REST.",
   "feign-client": "Spring OpenFeign client for synchronous inter-service REST calls — keeps service contracts type-safe.",
@@ -38,6 +122,19 @@ export const nodeTooltips: Record<string, string> = {
   "threadlocal": "ThreadLocal storage provides per-thread request caching — avoids redundant OpenSearch hits within a single request lifecycle.",
   "completable": "CompletableFuture-based async pipeline — non-blocking parallel fetch from OpenSearch, dramatically improving throughput.",
   "index-config": "Custom index mappings and analysers tuned for ad campaign data — key driver of the client-appreciated search improvement.",
+  // ─── New order flow node tooltips ───
+  "upstream": "Upstream services (CMS, admin tools, internal systems) initiate order requests over REST via Spring OpenFeign — type-safe HTTP clients generated from interface contracts, keeping inter-service coupling explicit and versioned.",
+  "other-svcs": "Other platform microservices (campaign approvals, budget change events, etc.) publish business events into the OMS inbound queue — decoupling producers from OMS so neither side blocks the other.",
+  "rabbitmq-in": "RabbitMQ inbound queue — OMS consumes events asynchronously from upstream producers. Durable queues with dead-letter routing ensure no event is silently dropped, even under spike load.",
+  "oms-block": "Order Management Service: the single source of truth for all ad order state. Orchestrates creation → validation → MongoDB persistence → event dispatch. Built on Spring Boot with a domain-driven model; MongoDB's flexible document schema accommodates the highly varied ad campaign structure without costly migrations.",
+  "ext-svc": "External service (ad exchange / fulfilment partner) receives finalised orders via synchronous REST. OMS calls this only after all internal validations pass — isolating the external integration from internal failures and retry storms.",
+  "rabbitmq-out": "RabbitMQ outbound queue — OMS publishes order lifecycle events after each state change. Downstream consumers (search, billing, reporting) subscribe independently, processing at their own pace without blocking OMS throughput.",
+  "search-node": "Search Microservice consumes order events to keep the OpenSearch index current. Uses ThreadLocal per-thread caching and CompletableFuture async pipelines to avoid redundant index hits and parallelise fetch operations.",
+  "downstream-node": "Billing, trafficking, and reporting services each consume from the outbound queue on their own schedule. Fan-out via RabbitMQ means adding a new downstream consumer requires zero changes to OMS.",
+  "perf-note": "ThreadLocal provides per-thread request-scoped caching — eliminates repeated OpenSearch lookups within a single request. CompletableFuture enables non-blocking parallel execution — OMS can fire multiple async operations concurrently, dramatically improving throughput under load.",
+  "mongodb-db": "MongoDB stores all order documents — chosen for its flexible schema, which fits the highly variable structure of ad campaign orders without requiring costly migrations for each new field. Horizontal sharding supports the volume of orders processed daily.",
+  "opensearch-db": "OpenSearch holds the searchable ad inventory index — tuned index mappings, custom analysers, and query DSL optimisations deliver fast relevance-ranked results. The Search Microservice writes here on every order event and reads here on every search query.",
+  // ─── existing tooltips ───
   "dev-intent": "Developer describes the desired AI behaviour in plain language — the skill system translates this into a structured prompt.",
   "skill-manager": "Skill Manager routes the intent to the right prompt template and enforces token budgets.",
   "token-budget": "Token budget configuration limits per-call cost and prevents runaway AI usage in production.",
@@ -48,65 +145,147 @@ export const nodeTooltips: Record<string, string> = {
 
 // ─── ORDER FLOW ───────────────────────────────────────────────────────────────
 
+const edgeLabelStyle = { fill: "#8090A0", fontSize: 10, fontFamily: "var(--font-jetbrains), monospace" };
+const edgeLabelBg = { fill: "rgba(10,15,28,0.75)" };
+
 export const orderNodes: Node[] = [
-  { id: "ad-request",  position: { x: 30,  y: 120 }, data: { label: "Ad Request" },       style: nodeStyle },
-  { id: "feign-client",position: { x: 220, y: 120 }, data: { label: "FeignClient\n(REST)" }, style: nodeStyle },
-  { id: "order-ms",    position: { x: 430, y: 120 }, data: { label: "Order Workflow\nMicroservice" }, style: { ...nodeStyle, border: "1px solid rgba(0, 212, 255, 0.8)", background: "rgba(0, 212, 255, 0.14)" } },
-  { id: "mongodb",     position: { x: 430, y: 260 }, data: { label: "MongoDB" },           style: nodeStyle },
-  { id: "rabbitmq",    position: { x: 430, y: 390 }, data: { label: "RabbitMQ" },          style: { ...nodeStyle, border: "1px solid rgba(57,255,20,0.5)", background: "rgba(57,255,20,0.07)" } },
-  { id: "consumers",   position: { x: 640, y: 390 }, data: { label: "Event\nConsumers" },  style: nodeStyle },
-  { id: "downstream",  position: { x: 840, y: 390 }, data: { label: "Downstream\nServices" }, style: nodeStyle },
-  { id: "jmx",         position: { x: 30,  y: 390 }, data: { label: "JMX Monitor" },      style: observabilityStyle },
-  { id: "kibana",      position: { x: 30,  y: 510 }, data: { label: "Kibana" },           style: observabilityStyle },
+  {
+    id: "upstream", type: "subLabel", draggable: false,
+    position: { x: 110, y: 10 },
+    data: { label: "Upstream services" },
+    style: grayBoxStyle,
+  },
+  {
+    id: "other-svcs", type: "subLabel", draggable: false,
+    position: { x: 560, y: 10 },
+    data: { label: "Other services" },
+    style: grayBoxStyle,
+  },
+  {
+    id: "rabbitmq-in", type: "subLabel", draggable: false,
+    position: { x: 580, y: 115 },
+    data: { label: "RabbitMQ", sublabel: "Inbound queue" },
+    style: amberBoxStyle,
+  },
+  {
+    id: "oms-block", type: "subLabel", draggable: false,
+    position: { x: 50, y: 195 },
+    data: {
+      label: "Order Management Service (OMS)",
+      sublabel: "Java / Spring Boot microservice",
+    },
+    style: omsBlockStyle,
+  },
+  {
+    id: "ext-svc", type: "subLabel", draggable: false,
+    position: { x: 700, y: 235 },
+    data: { label: "External service", sublabel: "Order submission" },
+    style: redBoxStyle,
+  },
+  {
+    id: "rabbitmq-out", type: "subLabel", draggable: false,
+    position: { x: 65, y: 340 },
+    data: { label: "RabbitMQ", sublabel: "Outbound queue" },
+    style: amberBoxStyle,
+  },
+  {
+    id: "mongodb-db", type: "subLabel", draggable: false,
+    position: { x: 330, y: 335 },
+    data: { label: "MongoDB", sublabel: "Document store" },
+    style: mongoDbStyle,
+  },
+  {
+    id: "search-node", type: "subLabel", draggable: false,
+    position: { x: 5, y: 465 },
+    data: { label: "Search microservice", sublabel: "OpenSearch indexing" },
+    style: blueBoxStyle,
+  },
+  {
+    id: "downstream-node", type: "subLabel", draggable: false,
+    position: { x: 320, y: 465 },
+    data: { label: "Downstream services", sublabel: "Billing, trafficking, reporting" },
+    style: grayBoxStyle,
+  },
+  {
+    id: "opensearch-db", type: "subLabel", draggable: false,
+    position: { x: 5, y: 590 },
+    data: { label: "OpenSearch", sublabel: "Search index" },
+    style: openSearchStyle,
+  },
+  {
+    id: "perf-note", type: "subLabel", draggable: false,
+    position: { x: 60, y: 700 },
+    data: { label: "ThreadLocal (per-thread cache)  ·  CompletableFuture (async)  for performance" },
+    style: noteStyle,
+  },
 ];
 
 export const orderEdges: Edge[] = [
-  { id: "e1", source: "ad-request",   target: "feign-client", label: "REST",  animated: true,  style: { stroke: "#00D4FF", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
-  { id: "e2", source: "feign-client", target: "order-ms",     label: "REST",  animated: true,  style: { stroke: "#00D4FF", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
-  { id: "e3", source: "order-ms",     target: "mongodb",      label: "persist", animated: false, style: { stroke: "#00D4FF", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
-  { id: "e4", source: "order-ms",     target: "rabbitmq",     label: "AMQP publish", animated: true, style: { stroke: "#39FF14", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
-  { id: "e5", source: "rabbitmq",     target: "consumers",    label: "consume", animated: true, style: { stroke: "#39FF14", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
-  { id: "e6", source: "consumers",    target: "downstream",   animated: true,  style: { stroke: "#00D4FF", strokeWidth: 1.5 } },
-  { id: "e7", source: "order-ms",     target: "jmx",          label: "metrics", animated: false, style: { stroke: "#39FF14", strokeWidth: 1, strokeDasharray: "4 4" }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
-  { id: "e8", source: "jmx",          target: "kibana",       animated: false, style: { stroke: "#39FF14", strokeWidth: 1, strokeDasharray: "4 4" } },
-];
-
-// ─── SEARCH FLOW ──────────────────────────────────────────────────────────────
-
-export const searchNodes: Node[] = [
-  { id: "search-query", position: { x: 30,  y: 200 }, data: { label: "Search\nQuery" },    style: nodeStyle },
-  { id: "search-ms",    position: { x: 230, y: 200 }, data: { label: "Search\nMicroservice" }, style: { ...nodeStyle, border: "1px solid rgba(0, 212, 255, 0.8)", background: "rgba(0, 212, 255, 0.14)" } },
-  { id: "openearch",    position: { x: 480, y: 200 }, data: { label: "OpenSearch" },        style: nodeStyle },
-  { id: "index-config", position: { x: 480, y: 350 }, data: { label: "Index Config\n+ Query Tuning" }, style: observabilityStyle },
-  { id: "threadlocal",  position: { x: 230, y: 350 }, data: { label: "ThreadLocal\nCache" }, style: observabilityStyle },
-  { id: "completable",  position: { x: 230, y: 80  }, data: { label: "CompletableFuture\n(async)" }, style: observabilityStyle },
-];
-
-export const searchEdges: Edge[] = [
-  { id: "s1", source: "search-query",  target: "search-ms",   label: "REST",   animated: true, style: { stroke: "#00D4FF", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
-  { id: "s2", source: "search-ms",     target: "openearch",   label: "query",  animated: true, style: { stroke: "#00D4FF", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
-  { id: "s3", source: "index-config",  target: "openearch",   label: "tuning", animated: false, style: { stroke: "#39FF14", strokeWidth: 1.5, strokeDasharray: "4 4" }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
-  { id: "s4", source: "threadlocal",   target: "search-ms",   label: "cache hit", animated: false, style: { stroke: "#39FF14", strokeWidth: 1, strokeDasharray: "4 4" }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
-  { id: "s5", source: "completable",   target: "search-ms",   label: "async pipeline", animated: true, style: { stroke: "#39FF14", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
-];
-
-// ─── AI / PROMPT LAYER ────────────────────────────────────────────────────────
-
-export const aiNodes: Node[] = [
-  { id: "dev-intent",     position: { x: 30,  y: 200 }, data: { label: "Developer\nIntent" },      style: nodeStyle },
-  { id: "skill-manager",  position: { x: 230, y: 200 }, data: { label: "Skill\nManager" },         style: { ...nodeStyle, border: "1px solid rgba(0, 212, 255, 0.8)", background: "rgba(0, 212, 255, 0.14)" } },
-  { id: "token-budget",   position: { x: 230, y: 360 }, data: { label: "Token Budget\nConfig" },   style: observabilityStyle },
-  { id: "prompt-template",position: { x: 460, y: 200 }, data: { label: "Prompt\nTemplate" },       style: nodeStyle },
-  { id: "claude-ai",      position: { x: 660, y: 200 }, data: { label: "Claude AI" },              style: { ...nodeStyle, border: "1px solid rgba(57,255,20,0.6)", background: "rgba(57,255,20,0.08)" } },
-  { id: "ai-response",    position: { x: 660, y: 360 }, data: { label: "Optimised\nAI Response" },style: observabilityStyle },
-];
-
-export const aiEdges: Edge[] = [
-  { id: "a1", source: "dev-intent",      target: "skill-manager",   animated: true,  label: "intent",  style: { stroke: "#00D4FF", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
-  { id: "a2", source: "skill-manager",   target: "prompt-template",  animated: true, label: "route",   style: { stroke: "#00D4FF", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
-  { id: "a3", source: "token-budget",    target: "skill-manager",    animated: false, label: "budget",  style: { stroke: "#39FF14", strokeWidth: 1, strokeDasharray: "4 4" }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
-  { id: "a4", source: "prompt-template", target: "claude-ai",        animated: true,  label: "prompt",  style: { stroke: "#39FF14", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
-  { id: "a5", source: "claude-ai",       target: "ai-response",      animated: true,  style: { stroke: "#39FF14", strokeWidth: 1.5 } },
+  {
+    id: "oe1", type: "smoothstep",
+    source: "upstream", target: "oms-block",
+    label: "REST / FeignClient", animated: true,
+    style: { stroke: "#8090A0", strokeWidth: 1.2 },
+    labelStyle: edgeLabelStyle, labelBgStyle: edgeLabelBg,
+  },
+  {
+    id: "oe2", type: "smoothstep",
+    source: "other-svcs", target: "rabbitmq-in",
+    label: "publishes events", animated: true,
+    style: { stroke: "#C07820", strokeWidth: 1.2 },
+    labelStyle: edgeLabelStyle, labelBgStyle: edgeLabelBg,
+  },
+  {
+    id: "oe3", type: "smoothstep",
+    source: "rabbitmq-in", target: "oms-block",
+    animated: true,
+    style: { stroke: "#C07820", strokeWidth: 1.2 },
+  },
+  {
+    id: "oe4", type: "smoothstep",
+    source: "oms-block", sourceHandle: "s",
+    target: "rabbitmq-out",
+    label: "publishes events", animated: true,
+    style: { stroke: "#C07820", strokeWidth: 1.2 },
+    labelStyle: edgeLabelStyle, labelBgStyle: edgeLabelBg,
+  },
+  {
+    id: "oe-mongo", type: "smoothstep",
+    source: "oms-block", sourceHandle: "s",
+    target: "mongodb-db",
+    label: "persist", animated: false,
+    style: { stroke: "#30B860", strokeWidth: 1.2 },
+    labelStyle: edgeLabelStyle, labelBgStyle: edgeLabelBg,
+  },
+  {
+    id: "oe5", type: "smoothstep",
+    source: "oms-block", sourceHandle: "sr",
+    target: "ext-svc", targetHandle: "tl",
+    label: "REST — send order", animated: true,
+    style: { stroke: "#8090A0", strokeWidth: 1.2 },
+    labelStyle: edgeLabelStyle, labelBgStyle: edgeLabelBg,
+  },
+  {
+    id: "oe6", type: "smoothstep",
+    source: "rabbitmq-out", target: "search-node",
+    label: "consumed by", animated: true,
+    style: { stroke: "#39FF14", strokeWidth: 1.2 },
+    labelStyle: edgeLabelStyle, labelBgStyle: edgeLabelBg,
+  },
+  {
+    id: "oe7", type: "smoothstep",
+    source: "rabbitmq-out", target: "downstream-node",
+    label: "consumed by", animated: true,
+    style: { stroke: "#39FF14", strokeWidth: 1.2 },
+    labelStyle: edgeLabelStyle, labelBgStyle: edgeLabelBg,
+  },
+  {
+    id: "oe-os", type: "smoothstep",
+    source: "search-node", target: "opensearch-db",
+    label: "query / index", animated: true,
+    style: { stroke: "#6080C0", strokeWidth: 1.2 },
+    labelStyle: edgeLabelStyle, labelBgStyle: edgeLabelBg,
+  },
 ];
 
 // ─── DEV WORKFLOW ─────────────────────────────────────────────────────────────
@@ -125,36 +304,39 @@ const claudeStyle = {
 
 export const devflowNodes: Node[] = [
   // Work pipeline — Copilot (green tint, top lane)
-  { id: "spec-doc",      position: { x: 30,  y: 60  }, data: { label: "Spec\nDocument" },           style: copilotStyle },
-  { id: "copilot",       position: { x: 230, y: 60  }, data: { label: "Copilot\n+ Skills" },        style: { ...copilotStyle, border: "1px solid rgba(57,255,20,0.8)", background: "rgba(57,255,20,0.12)" } },
+  { id: "spec-doc",     type: "subLabel", draggable: false, position: { x: 30,  y: 60  }, data: { label: "Spec Document" },      style: copilotStyle },
+  { id: "copilot",      type: "subLabel", draggable: false, position: { x: 230, y: 60  }, data: { label: "Copilot + Skills" },   style: { ...copilotStyle, border: "1px solid rgba(57,255,20,0.8)", background: "rgba(57,255,20,0.12)" } },
 
   // Personal pipeline — Claude Code (cyan, bottom lane)
-  { id: "claude-md",     position: { x: 30,  y: 260 }, data: { label: "CLAUDE.md" },                style: claudeStyle },
-  { id: "task-md",       position: { x: 230, y: 260 }, data: { label: "TASK.md\nQueue" },           style: claudeStyle },
-  { id: "remote-agent",  position: { x: 430, y: 260 }, data: { label: "Remote Agent\nLoop" },       style: { ...claudeStyle, border: "1px solid rgba(0,212,255,0.9)", background: "rgba(0,212,255,0.16)" } },
+  { id: "claude-md",    type: "subLabel", draggable: false, position: { x: 30,  y: 260 }, data: { label: "CLAUDE.md" },          style: claudeStyle },
+  { id: "task-md",      type: "subLabel", draggable: false, position: { x: 230, y: 260 }, data: { label: "TASK.md Queue" },      style: claudeStyle },
+  { id: "remote-agent", type: "subLabel", draggable: false, position: { x: 430, y: 260 }, data: { label: "Remote Agent Loop" },  style: { ...claudeStyle, border: "1px solid rgba(0,212,255,0.9)", background: "rgba(0,212,255,0.16)" } },
 
   // Convergence
-  { id: "code-gen",      position: { x: 630, y: 160 }, data: { label: "Code\nGeneration" },         style: nodeStyle },
-  { id: "junit",         position: { x: 800, y: 60  }, data: { label: "JUnit /\nMockito" },         style: observabilityStyle },
-  { id: "code-review",   position: { x: 800, y: 260 }, data: { label: "Code\nReview" },             style: observabilityStyle },
-  { id: "ci-deploy",     position: { x: 980, y: 160 }, data: { label: "CI/CD\nDeploy" },            style: nodeStyle },
+  { id: "code-gen",     type: "subLabel", draggable: false, position: { x: 630, y: 160 }, data: { label: "Code Generation" },    style: nodeStyle },
+  { id: "junit",        type: "subLabel", draggable: false, position: { x: 800, y: 60  }, data: { label: "JUnit / Mockito" },    style: observabilityStyle },
+  { id: "code-review",  type: "subLabel", draggable: false, position: { x: 800, y: 260 }, data: { label: "Code Review" },        style: observabilityStyle },
+  { id: "ci-deploy",    type: "subLabel", draggable: false, position: { x: 980, y: 160 }, data: { label: "CI/CD Deploy" },       style: nodeStyle },
 ];
+
+const devLabelStyle = { fill: "#8896B0", fontSize: 10, fontFamily: "var(--font-jetbrains), monospace" };
+const devLabelBg    = { fill: "rgba(10,15,28,0.75)" };
 
 export const devflowEdges: Edge[] = [
   // Copilot track
-  { id: "d1", source: "spec-doc",     target: "copilot",      label: "drives",  animated: true,  style: { stroke: "#39FF14", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
-  { id: "d2", source: "copilot",      target: "code-gen",     label: "generates", animated: true, style: { stroke: "#39FF14", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
+  { id: "d1", type: "smoothstep", source: "spec-doc",     target: "copilot",      label: "drives",    animated: true,  style: { stroke: "#39FF14", strokeWidth: 1.2 }, labelStyle: devLabelStyle, labelBgStyle: devLabelBg },
+  { id: "d2", type: "smoothstep", source: "copilot",      target: "code-gen",     label: "generates", animated: true,  style: { stroke: "#39FF14", strokeWidth: 1.2 }, labelStyle: devLabelStyle, labelBgStyle: devLabelBg },
 
   // Claude Code track
-  { id: "d3", source: "claude-md",    target: "task-md",      label: "context", animated: false, style: { stroke: "#00D4FF", strokeWidth: 1.5, strokeDasharray: "4 4" }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
-  { id: "d4", source: "task-md",      target: "remote-agent", label: "queues",  animated: true,  style: { stroke: "#00D4FF", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
-  { id: "d5", source: "remote-agent", target: "code-gen",     label: "commits", animated: true,  style: { stroke: "#00D4FF", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
+  { id: "d3", type: "smoothstep", source: "claude-md",    target: "task-md",      label: "context",   animated: false, style: { stroke: "#00D4FF", strokeWidth: 1.2, strokeDasharray: "4 4" }, labelStyle: devLabelStyle, labelBgStyle: devLabelBg },
+  { id: "d4", type: "smoothstep", source: "task-md",      target: "remote-agent", label: "queues",    animated: true,  style: { stroke: "#00D4FF", strokeWidth: 1.2 }, labelStyle: devLabelStyle, labelBgStyle: devLabelBg },
+  { id: "d5", type: "smoothstep", source: "remote-agent", target: "code-gen",     label: "commits",   animated: true,  style: { stroke: "#00D4FF", strokeWidth: 1.2 }, labelStyle: devLabelStyle, labelBgStyle: devLabelBg },
 
   // Convergence
-  { id: "d6", source: "code-gen",     target: "junit",        label: "tested",  animated: false, style: { stroke: "#00D4FF", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
-  { id: "d7", source: "code-gen",     target: "code-review",  label: "reviewed", animated: false, style: { stroke: "#00D4FF", strokeWidth: 1.5 }, labelStyle: { fill: "#8896B0", fontSize: 10 } },
-  { id: "d8", source: "junit",        target: "ci-deploy",    animated: true,   style: { stroke: "#39FF14", strokeWidth: 1.5 } },
-  { id: "d9", source: "code-review",  target: "ci-deploy",    animated: true,   style: { stroke: "#39FF14", strokeWidth: 1.5 } },
+  { id: "d6", type: "smoothstep", source: "code-gen",     target: "junit",        label: "tested",    animated: false, style: { stroke: "#00D4FF", strokeWidth: 1.2 }, labelStyle: devLabelStyle, labelBgStyle: devLabelBg },
+  { id: "d7", type: "smoothstep", source: "code-gen",     target: "code-review",  label: "reviewed",  animated: false, style: { stroke: "#00D4FF", strokeWidth: 1.2 }, labelStyle: devLabelStyle, labelBgStyle: devLabelBg },
+  { id: "d8", type: "smoothstep", source: "junit",        target: "ci-deploy",    animated: true,     style: { stroke: "#39FF14", strokeWidth: 1.2 } },
+  { id: "d9", type: "smoothstep", source: "code-review",  target: "ci-deploy",    animated: true,     style: { stroke: "#39FF14", strokeWidth: 1.2 } },
 ];
 
 // Tooltips for devflow nodes
@@ -172,7 +354,5 @@ Object.assign(nodeTooltips, {
 
 export const diagrams: Record<DiagramTab, { nodes: Node[]; edges: Edge[]; label: string }> = {
   order:   { nodes: orderNodes,   edges: orderEdges,   label: "Order Flow" },
-  search:  { nodes: searchNodes,  edges: searchEdges,  label: "Search Flow" },
-  ai:      { nodes: aiNodes,      edges: aiEdges,      label: "AI / Prompt Layer" },
   devflow: { nodes: devflowNodes, edges: devflowEdges, label: "Dev Workflow" },
 };

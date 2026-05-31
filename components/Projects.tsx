@@ -9,8 +9,6 @@ const ArchDiagram = dynamic(() => import("@/components/ArchDiagram"), { ssr: fal
 
 const TABS: { key: DiagramTab; label: string }[] = [
   { key: "order",   label: "Order Flow" },
-  { key: "search",  label: "Search Flow" },
-  { key: "ai",      label: "AI / Prompt Layer" },
   { key: "devflow", label: "Dev Workflow" },
 ];
 
@@ -113,6 +111,7 @@ export default function Projects() {
           {/* ReactFlow diagram */}
           <div className="rounded-xl overflow-hidden mb-6" style={{ border: "1px solid rgba(0,212,255,0.12)" }}>
             <ArchDiagram
+              key={activeTab}
               nodes={diagrams[activeTab].nodes}
               edges={diagrams[activeTab].edges}
             />
