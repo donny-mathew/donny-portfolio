@@ -12,11 +12,6 @@ const TABS: { key: DiagramTab; label: string }[] = [
   { key: "devflow", label: "Dev Workflow" },
 ];
 
-const ACHIEVEMENTS = [
-  { label: "Client appreciation — enhanced search", icon: "⭐" },
-  { label: "Async throughput via CompletableFuture", icon: "⚡" },
-  { label: "AI token usage optimised via skill mgmt", icon: "🤖" },
-];
 
 const SECONDARY = [
   {
@@ -117,27 +112,6 @@ export default function Projects() {
             />
           </div>
 
-          {/* Achievement chips */}
-          <div className="flex flex-wrap gap-3">
-            {ACHIEVEMENTS.map((a) => (
-              <motion.div
-                key={a.label}
-                className="flex items-center gap-2 px-4 py-2 rounded-full text-sm"
-                style={{
-                  background: "rgba(57,255,20,0.07)",
-                  border: "1px solid rgba(57,255,20,0.25)",
-                  color: "#A0E890",
-                }}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3 }}
-              >
-                <span>{a.icon}</span>
-                <span>{a.label}</span>
-              </motion.div>
-            ))}
-          </div>
         </motion.div>
 
         {/* Secondary projects */}

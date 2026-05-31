@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { resumeSystemPrompt } from "@/lib/resume-data";
+import { wikiSystemPrompt } from "@/lib/wiki";
 
 const client = new Anthropic();
 
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     system: [
       {
         type: "text",
-        text: resumeSystemPrompt,
+        text: wikiSystemPrompt,
         cache_control: { type: "ephemeral" },
       },
     ],
