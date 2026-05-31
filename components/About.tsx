@@ -44,16 +44,19 @@ export default function About() {
 
           {/* Bio */}
           <div className="flex-1">
-            <motion.p
-              className="text-base leading-8 mb-8"
-              style={{ color: "#B8C8E0" }}
+            <motion.div
+              className="space-y-4 mb-8"
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              {profile.bio}
-            </motion.p>
+              {profile.bio.split("\n\n").map((para, i) => (
+                <p key={i} className="text-base leading-8" style={{ color: "#B8C8E0" }}>
+                  {para}
+                </p>
+              ))}
+            </motion.div>
 
             {/* Australia badge */}
             <motion.div

@@ -2,12 +2,12 @@ export const profile = {
   name: "Donny J Mathew",
   title: "Lead Engineer",
   tagline: "Java · Spring Boot · AI",
-  bio: "Java and Spring Boot developer with 8 years of experience building microservices that perform reliably in real-world production environments. Currently working on an omnichannel ad tech platform, focusing on event-driven systems, distributed search, and cross-service features. Deeply interested in clean architecture, measurable performance, and AI-assisted development including prompt engineering and prompt management techniques.",
+  bio: "I design and build distributed systems that handle high-throughput media workflows — across order management, event-driven pipelines, and distributed search. At QBurst, I lead backend engineering on Prisma by Mediaocean, a platform that orchestrates hundreds of line items across broadcast, digital, and print channels. Eight years in, I still care most about systems that are observable, maintainable, and built to last.\n\nOn the development side, I've built custom GitHub Copilot agent workflows and spec-driven development pipelines — turning a requirements document into tested, reviewable code with minimal manual scaffolding.\n\nOutside work, I follow the EPL obsessively, enjoy trekking, and shoot street photography when I travel.",
   email: "donny.j.mathew@gmail.com",
   phone: "+91 9495950955",
   linkedIn: "https://www.linkedin.com/in/donny-j-mathew",
   location: "Kochi, India",
-  relocation: "Open to relocation — Australia (Sydney / Perth and other states). Visa sponsorship welcome.",
+  relocation: "Actively seeking roles in Sydney or Perth — open to 482 visa sponsorship.",
 };
 
 export const skills = [

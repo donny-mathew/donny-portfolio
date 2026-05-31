@@ -14,12 +14,12 @@ export const wiki = `
 - **Current employer**: QBurst, Kochi, India (November 2021 – present)
 - **Core stack**: Java, Spring Boot, microservices
 - **Location**: Kochi, Kerala, India
-- **Relocation**: Actively seeking opportunities in Australia (Sydney, Perth, and other states). Open to visa sponsorship.
+- **Relocation**: Actively seeking roles in Sydney or Perth — open to 482 visa sponsorship.
 - **Languages**: English (C2 — proficient/fluent), Malayalam (native)
 - **Contact**: donny.j.mathew@gmail.com | +91 9495950955
 - **LinkedIn**: https://www.linkedin.com/in/donny-j-mathew
 
-Donny is a backend-focused engineer who specialises in Java/Spring Boot microservices, event-driven architecture, and distributed systems. He has deep hands-on experience with MongoDB, OpenSearch, and RabbitMQ, and has applied AI-assisted development practices (prompt engineering, agent workflows) in production. He is currently a Lead Engineer and is looking to bring that expertise to an Australian engineering team.
+Donny designs and builds distributed systems that handle high-throughput media workflows — across order management, event-driven pipelines, and distributed search. At QBurst, he leads backend engineering on Prisma by Mediaocean, a platform that orchestrates hundreds of line items across broadcast, digital, and print channels. He has deep hands-on experience with MongoDB, OpenSearch, and RabbitMQ, and has built custom GitHub Copilot agent workflows and spec-driven development pipelines in production. He is actively seeking roles in Sydney or Perth and is open to 482 visa sponsorship.
 
 ---
 
@@ -143,8 +143,8 @@ UI and backend customisation of IBM's omnichannel Order Management System.
 ---
 
 ## [[Availability & Relocation]]
-- Donny is actively seeking opportunities in **Australia** — Sydney, Perth, and open to other states.
-- Open to **visa sponsorship** arrangements.
+- Donny is actively seeking roles in **Sydney or Perth**.
+- Open to **482 visa sponsorship**.
 - For specific questions about notice period, start date, or salary expectations, contact Donny directly.
 
 ---
