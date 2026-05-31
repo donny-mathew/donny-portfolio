@@ -12,6 +12,29 @@ const TABS: { key: DiagramTab; label: string }[] = [
   { key: "devflow", label: "Dev Workflow" },
 ];
 
+const MOBILE_SUMMARY: Record<DiagramTab, { points: string[] }> = {
+  order: {
+    points: [
+      "Upstream services → OMS via REST / FeignClient",
+      "Other services → RabbitMQ Inbound → OMS",
+      "OMS persists orders to MongoDB",
+      "OMS publishes events → RabbitMQ Outbound",
+      "RabbitMQ → Search Microservice → OpenSearch index",
+      "RabbitMQ → Downstream services (Billing, Trafficking, Reporting)",
+      "OMS → External Service via REST (order submission)",
+    ],
+  },
+  devflow: {
+    points: [
+      "Spec Document drives Copilot + Skills (work pipeline)",
+      "CLAUDE.md → TASK.md Queue → Remote Agent Loop (personal pipeline)",
+      "Both tracks converge at Code Generation",
+      "Code Generation → JUnit / Mockito tests + Code Review",
+      "Tests & review merged → CI/CD Deploy",
+    ],
+  },
+};
+
 
 const SECONDARY = [
   {
@@ -103,13 +126,26 @@ export default function Projects() {
             ))}
           </div>
 
-          {/* ReactFlow diagram */}
-          <div className="rounded-xl overflow-hidden mb-6" style={{ border: "1px solid rgba(0,212,255,0.12)" }}>
+          {/* ReactFlow diagram — desktop only */}
+          <div className="hidden md:block rounded-xl overflow-hidden mb-6" style={{ border: "1px solid rgba(0,212,255,0.12)" }}>
             <ArchDiagram
               key={activeTab}
               nodes={diagrams[activeTab].nodes}
               edges={diagrams[activeTab].edges}
             />
+          </div>
+
+          {/* Mobile architecture summary */}
+          <div className="block md:hidden rounded-xl p-5 mb-6 space-y-2" style={{ border: "1px solid rgba(0,212,255,0.12)", background: "rgba(0,212,255,0.03)" }}>
+            <p className="text-xs font-mono mb-3" style={{ color: "var(--accent-cyan)" }}>
+              Architecture overview
+            </p>
+            {MOBILE_SUMMARY[activeTab].points.map((point, i) => (
+              <div key={i} className="flex items-start gap-2 text-sm" style={{ color: "#8896B0" }}>
+                <span style={{ color: "var(--accent-cyan)", marginTop: 1 }}>›</span>
+                <span>{point}</span>
+              </div>
+            ))}
           </div>
 
         </motion.div>

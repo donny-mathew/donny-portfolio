@@ -62,7 +62,7 @@ export default function AskDonny() {
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Sorry, something went wrong. Please try again." },
+        { role: "assistant", content: "Something went wrong. [Email Donny directly](mailto:donny.j.mathew@gmail.com)" },
       ]);
     } finally {
       setLoading(false);
@@ -111,12 +111,26 @@ export default function AskDonny() {
               style={{ borderBottom: "1px solid rgba(0,212,255,0.15)" }}
             >
               <span className="text-xl">🤖</span>
-              <div>
+              <div className="flex-1">
                 <p className="font-semibold text-white text-sm font-mono">GET /donny</p>
                 <p className="text-xs" style={{ color: "var(--text-muted)" }}>
                   AI assistant — answers from resume data
                 </p>
               </div>
+              {messages.length > 0 && (
+                <button
+                  onClick={() => setMessages([])}
+                  className="text-xs font-mono px-2.5 py-1 rounded-lg transition-all"
+                  style={{
+                    background: "rgba(0,212,255,0.08)",
+                    border: "1px solid rgba(0,212,255,0.2)",
+                    color: "var(--accent-cyan)",
+                  }}
+                  title="Start a new conversation"
+                >
+                  ↺ New
+                </button>
+              )}
             </div>
 
             {/* Messages */}

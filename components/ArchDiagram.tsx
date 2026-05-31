@@ -7,9 +7,11 @@ import ReactFlow, {
   Handle,
   MiniMap,
   NodeMouseHandler,
+  Panel,
   Position,
   useNodesState,
   useEdgesState,
+  useReactFlow,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import type { Node, Edge } from "reactflow";
@@ -42,6 +44,26 @@ SubLabelNode.displayName = "SubLabelNode";
 
 const nodeTypes = { subLabel: SubLabelNode };
 
+const FitViewButton = () => {
+  const { fitView } = useReactFlow();
+  return (
+    <Panel position="top-right">
+      <button
+        onClick={() => fitView({ duration: 400, padding: 0.2 })}
+        className="text-xs font-mono px-2.5 py-1 rounded-lg transition-all"
+        style={{
+          background: "rgba(10,15,28,0.85)",
+          border: "1px solid rgba(0,212,255,0.3)",
+          color: "rgba(0,212,255,0.8)",
+        }}
+        title="Reset view"
+      >
+        ⊞ fit
+      </button>
+    </Panel>
+  );
+};
+
 export default function ArchDiagram({ nodes: initNodes, edges: initEdges }: ArchDiagramProps) {
   const [nodes, , onNodesChange] = useNodesState(initNodes);
   const [edges, , onEdgesChange] = useEdgesState(initEdges);
@@ -73,6 +95,7 @@ export default function ArchDiagram({ nodes: initNodes, edges: initEdges }: Arch
       >
         <Background color="rgba(0,212,255,0.06)" gap={24} />
         <Controls showInteractive={false} />
+        <FitViewButton />
         <MiniMap
           nodeColor={() => "rgba(0,212,255,0.3)"}
           maskColor="rgba(10,15,28,0.7)"
