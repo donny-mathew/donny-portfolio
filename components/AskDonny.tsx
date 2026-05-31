@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ReactMarkdown from "react-markdown";
 
 interface Message {
   role: "user" | "assistant";
@@ -152,7 +153,24 @@ export default function AskDonny() {
                         : { background: "rgba(255,255,255,0.05)", color: "#C8D8F0" }
                     }
                   >
-                    {m.content || (loading && i === messages.length - 1 ? "▍" : "")}
+                    {m.role === "assistant" ? (
+                      <ReactMarkdown
+                        components={{
+                          p:      ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                          ul:     ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
+                          ol:     ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
+                          li:     ({ children }) => <li className="leading-5">{children}</li>,
+                          strong: ({ children }) => <strong className="font-semibold" style={{ color: "var(--accent-cyan)" }}>{children}</strong>,
+                          h2:     ({ children }) => <p className="font-semibold mt-2 mb-1" style={{ color: "var(--accent-cyan)" }}>{children}</p>,
+                          h3:     ({ children }) => <p className="font-medium mt-1 mb-0.5" style={{ color: "#A0C8E8" }}>{children}</p>,
+                          a:      ({ href, children }) => <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent-cyan)", textDecoration: "underline" }}>{children}</a>,
+                        }}
+                      >
+                        {m.content || (loading && i === messages.length - 1 ? "▍" : "")}
+                      </ReactMarkdown>
+                    ) : (
+                      m.content
+                    )}
                   </div>
                 </div>
               ))}
