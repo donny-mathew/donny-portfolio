@@ -7,7 +7,20 @@ export const profile = {
   phone: "+91 9495950955",
   linkedIn: "https://www.linkedin.com/in/donny-j-mathew",
   location: "Kochi, India",
-  relocation: "Actively seeking roles in Sydney or Perth — open to 482 visa sponsorship.",
+  relocation: "ACS Skills Assessment approved (Jul 2025) — actively seeking roles in Sydney or Perth, open to 482 visa sponsorship.",
+};
+
+export const acsAssessment = {
+  authority: "Australian Computer Society (ACS)",
+  reference: "ACS-0028930",
+  result: "Suitable",
+  date: "25 Jul 2025",
+  validUntil: "25 Jul 2027",
+  codes: [
+    { code: "261311", title: "Analyst Programmer" },
+    { code: "261312", title: "Developer Programmer" },
+    { code: "261313", title: "Software Engineer" },
+  ],
 };
 
 export const skills = [
@@ -160,5 +173,10 @@ LANGUAGES: English (C2 — Proficient/Fluent), Malayalam (Native)
 ACHIEVEMENTS:
 - Client appreciation for enhanced search feature implementation
 - High Performer in Infosys Training (85%)
+
+VISA / MIGRATION STATUS:
+- ACS Skills Assessment: SUITABLE (Ref: ACS-0028930, issued 25 Jul 2025, valid until 25 Jul 2027)
+- Assessed for: ANZSCO 261311 Analyst Programmer, 261312 Developer Programmer, 261313 Software Engineer
+- Requires sponsorship (482 TSS visa or similar) — ACS assessment strengthens visa pathway
 
 If asked something not covered above, say you don't have that information and suggest the recruiter reach out directly at ${profile.email}.`;

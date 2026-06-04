@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { profile } from "@/lib/resume-data";
+import { profile, acsAssessment } from "@/lib/resume-data";
 
 export default function Contact() {
   return (
@@ -40,9 +40,41 @@ export default function Contact() {
         >
           <div className="text-5xl mb-4">🇦🇺</div>
           <h3 className="text-xl font-bold text-white mb-2">Available for roles in Australia</h3>
-          <p className="text-sm leading-6" style={{ color: "var(--text-muted)" }}>
-            {profile.relocation}
+          <p className="text-sm leading-6 mb-5" style={{ color: "var(--text-muted)" }}>
+            Actively seeking roles in Sydney or Perth · Open to 482 visa sponsorship
           </p>
+
+          {/* ACS Assessment block */}
+          <div
+            className="rounded-xl px-5 py-4 text-left inline-block w-full max-w-sm mx-auto"
+            style={{ background: "rgba(57,255,20,0.05)", border: "1px solid rgba(57,255,20,0.25)" }}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-mono font-semibold" style={{ color: "#39FF14" }}>
+                ACS Skills Assessment
+              </span>
+              <span
+                className="text-xs font-mono px-2 py-0.5 rounded-full"
+                style={{ background: "rgba(57,255,20,0.15)", border: "1px solid rgba(57,255,20,0.4)", color: "#39FF14" }}
+              >
+                SUITABLE ✓
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2 mb-3">
+              {acsAssessment.codes.map((c) => (
+                <span
+                  key={c.code}
+                  className="text-xs font-mono px-2.5 py-1 rounded-full"
+                  style={{ background: "rgba(0,212,255,0.08)", border: "1px solid rgba(0,212,255,0.2)", color: "var(--accent-cyan)" }}
+                >
+                  {c.code} · {c.title}
+                </span>
+              ))}
+            </div>
+            <p className="text-xs font-mono" style={{ color: "var(--text-muted)" }}>
+              Ref: {acsAssessment.reference} · Valid until {acsAssessment.validUntil}
+            </p>
+          </div>
         </motion.div>
 
         {/* Contact links */}

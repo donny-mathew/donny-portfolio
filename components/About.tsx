@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { profile, skillChips } from "@/lib/resume-data";
+import { profile, skillChips, acsAssessment } from "@/lib/resume-data";
 import GeometricAvatar from "@/components/GeometricAvatar";
 
 export default function About() {
@@ -58,21 +58,39 @@ export default function About() {
               ))}
             </motion.div>
 
-            {/* Australia badge */}
+            {/* Australia / ACS badge */}
             <motion.div
-              className="inline-flex items-center gap-3 px-5 py-3 rounded-xl mb-10 text-sm font-medium"
+              className="rounded-xl px-5 py-4 mb-10 inline-block"
               style={{
                 background: "rgba(0,212,255,0.07)",
                 border: "1px solid rgba(0,212,255,0.25)",
-                color: "var(--accent-cyan)",
               }}
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <span className="text-xl">🇦🇺</span>
-              <span>{profile.relocation}</span>
+              <div className="flex items-center gap-3 text-sm font-medium mb-3" style={{ color: "var(--accent-cyan)" }}>
+                <span className="text-xl">🇦🇺</span>
+                <span>{profile.relocation}</span>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span
+                  className="text-xs font-mono px-2.5 py-1 rounded-full"
+                  style={{ background: "rgba(57,255,20,0.12)", border: "1px solid rgba(57,255,20,0.4)", color: "#39FF14" }}
+                >
+                  ACS Approved ✓
+                </span>
+                {acsAssessment.codes.map((c) => (
+                  <span
+                    key={c.code}
+                    className="text-xs font-mono px-2.5 py-1 rounded-full"
+                    style={{ background: "rgba(0,212,255,0.08)", border: "1px solid rgba(0,212,255,0.2)", color: "var(--accent-cyan)" }}
+                  >
+                    {c.code} {c.title}
+                  </span>
+                ))}
+              </div>
             </motion.div>
 
             {/* Skill chips */}
